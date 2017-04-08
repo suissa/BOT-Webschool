@@ -14,65 +14,29 @@ const bot = new TelegramBot( TOKEN, { polling: true } )
 
 const defaultReplyMessage = `Received your message`
 
-const cbEcho = ( bot ) => ( msg, match ) => 
-  sendMessageFrom( bot, match[ TEXT_POSITION ] )( msg )
+// const cbEcho = ( bot ) => ( msg, match ) => 
+//   sendMessageFrom( bot, match[ TEXT_POSITION ] )( msg )
 
-const cbFind = ( bot ) => ( msg, match ) =>  
-  sendMessageFrom( bot, match[ TEXT_POSITION ] )( msg )
+// const cbFind = ( bot ) => ( msg, match ) =>  
+//   sendMessageFrom( bot, match[ TEXT_POSITION ] )( msg )
 
-const getOnlyLink = ( obj ) => obj.link
+// const cbVideo = ( bot ) => ( msg, match ) =>  
+//   YoutubeInMp3.search( match[ TEXT_POSITION ] )
+//               .then( sendYoutubeLinks( bot, msg ) )
 
-const sendingMessagesFrom = ( bot, msg ) => ( reply ) => //console.log('reply ', reply )
-  sendMessageFrom( bot, reply )( msg )
+// const cbAula = ( bot ) => ( msg, match ) =>  
+//   YoutubeInMp3.search( match[ TEXT_POSITION ] + ` webschool` )
+//               .then( sendYoutubeLinks( bot, msg ) )
 
-const sendYoutubeLinks = ( bot, msg  ) => ( body ) =>
-  ( body.map ) 
-      ? body.slice(0, 1)
-            .map( getOnlyLink )
-            .map( sendingMessagesFrom( bot , msg ) )
-      : sendingMessagesFrom( bot , msg )( body )
-                    
-const cbVideo = ( bot ) => ( msg, match ) =>  
-  YoutubeInMp3.search( match[ TEXT_POSITION ] )
-              .then( sendYoutubeLinks( bot, msg ) )
-
-const cbAula = ( bot ) => ( msg, match ) =>  
-  YoutubeInMp3.search( match[ TEXT_POSITION ] + ` webschool` )
-              .then( sendYoutubeLinks( bot, msg ) )
-
-const HOST = `http://127.0.0.1:3000`
-const BOT_URL = `${HOST}/api/bot/`
-const cbMyID = ( bot ) => ( msg, match ) =>  
-  sendMessageFrom( bot, BOT_URL + msg.chat.id )( msg )
 
 const testFor = {
-  echo: {
-    regex: /\/echo (.+)/,
-    andExecute: cbEcho( bot )
-  },
-  aula: {
-    regex: /\/aula (.+)/,
-    andExecute: cbAula( bot )
-  },
-  ask: {
-    regex: /(\/ask (.+)|\/pergunta (.+))/,
-    andExecute: cbAula( bot )
-  },
-  id: {
-    regex: /\/id/,
-    andExecute: cbMyID( bot )
-  },
-  // find: {
-  //   regex: /\/find (.+)/,
-  //   andExecute: cbFind( bot )
-  // },
-  // video: {
-  //   regex: /\/video (.+)/,
-  //   andExecute: cbVideo( bot )
-  // },
+  echo: require( `./commands/echo` )( bot ),
+  id: require( `./commands/id` )( bot ),
+  aula: require( `./commands/aula` )( bot ),
+  ask: require( `./commands/ask` )( bot ),
 }
 
-
+console.log('testFor', testFor)
 const addRegexTo = ( bot, testFor ) => 
   Object.keys( testFor ).reduce( ( acc, cur ) =>
     bot.onText( testFor[ cur ].regex, testFor[ cur ].andExecute )
