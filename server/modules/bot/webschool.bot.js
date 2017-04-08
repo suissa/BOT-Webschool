@@ -1,9 +1,10 @@
 const TelegramBot = require( `node-telegram-bot-api` )
+require('dotenv').config()
 
 const YoutubeInMp3 = require('./../crawler/providers/youtubeinmp3')
 
 // replace the value below with the Telegram TOKEN you receive from @BotFather
-const TOKEN = `333805026:AAHUiSsbAY909SWIxjxKWTHktMc0V8CimT4`
+const TOKEN = process.env.TOKEN
 const TEXT_POSITION = 1
 
 
@@ -39,7 +40,8 @@ const cbAula = ( bot ) => ( msg, match ) =>
   YoutubeInMp3.search( match[ TEXT_POSITION ] + ` webschool` )
               .then( sendYoutubeLinks( bot, msg ) )
 
-const BOT_URL = `http://localhost:3000/api/bot/`
+const HOST = `http://127.0.0.1:3000`
+const BOT_URL = `${HOST}/api/bot/`
 const cbMyID = ( bot ) => ( msg, match ) =>  
   sendMessageFrom( bot, BOT_URL + msg.chat.id )( msg )
 
