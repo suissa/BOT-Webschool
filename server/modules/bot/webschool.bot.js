@@ -39,8 +39,9 @@ const cbAula = ( bot ) => ( msg, match ) =>
   YoutubeInMp3.search( match[ TEXT_POSITION ] + ` webschool` )
               .then( sendYoutubeLinks( bot, msg ) )
 
+const BOT_URL = `http://localhost:3000/api/bot/`
 const cbMyID = ( bot ) => ( msg, match ) =>  
-  sendMessageFrom( bot, msg.chat.id )( msg )
+  sendMessageFrom( bot, BOT_URL + msg.chat.id )( msg )
 
 const testFor = {
   echo: {

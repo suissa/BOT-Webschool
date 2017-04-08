@@ -23,7 +23,8 @@ router.get('/', function(req, res, next) {
 
 router.get('/:id', function(req, res, next) {
   const id = req.params.id || `77586615`
-  webschoolBot.sendMessage( id )( req.query.msg )
+  const reply = req.query.msg || `oieee`
+  webschoolBot.sendMessage( id )( reply )
   res.send('msg enviada para o Telegram');
 });
 
