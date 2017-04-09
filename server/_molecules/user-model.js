@@ -1,20 +1,18 @@
-'use strict'
-const mongoose = require('mongoose');
-const Schema = mongoose.Schema;
+const SchemaName = `User`
+const mongoose = require( 'mongoose' )
+const mongoosePaginate = require( 'mongoose-paginate' )
 
-var mongoosePaginate = require('mongoose-paginate');
+const name = require( '../_atoms/string-required' )
+const email = require( '../_atoms/string-required' )
+const forgot = require( '../_atoms/string' )
+const login = require( '../_atoms/string-required-unique' )
+const password = require( '../_atoms/string-password-crypt' )
+const token = require( '../_atoms/string' )
+const status = require( '../_atoms/boolean-default-true' )
+const created_at = require( '../_atoms/date-default' )
+const updated_at = require( '../_atoms/date-default' )
 
-const name = require('../_atoms/string-required')
-const email = require('../_atoms/string-required')
-const forgot = require('../_atoms/string')
-const login = require('../_atoms/string-required-unique')
-const password = require('../_atoms/string-password-crypt')
-const token = require('../_atoms/string')
-const status = require('../_atoms/boolean-default-true')
-const created_at = require('../_atoms/date-default')
-const updated_at = require('../_atoms/date-default')
-
-const User = new Schema({
+const Schema = new mongoose.Schema({
 	name,
 	login,
 	password,
@@ -24,12 +22,11 @@ const User = new Schema({
 	status,
 	created_at,
 	updated_at
-});
+})
 
-User.index({login: 1,status: 1,email: 1});
+Schema.index( { login: 1,status: 1,email: 1 } )
+Schema.plugin( mongoosePaginate )
 
-User.plugin(mongoosePaginate);
+const Molecule = mongoose.model( SchemaName, Schema )
 
-const molecule = mongoose.model('Users', User);
-
-module.exports = molecule
+module.exports = Molecule

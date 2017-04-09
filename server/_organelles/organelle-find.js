@@ -1,7 +1,7 @@
 'use strict'
 module.exports  = (Organism) => 
 (query,select,paginate) => (res)=> {
-
+	
 	const success = require('./ribossomos/success-200-json')(res)
 	const error = require('./ribossomos/error-json')(res)
 

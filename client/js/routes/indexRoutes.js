@@ -4,9 +4,9 @@
         $stateProvider    
         .state("login", {
             url: '/',
-            templateUrl : "../paginas/index/index.html",
-            controller: 'UserCtrl',
-            authorize: false
+            templateUrl : "../paginas/chat/index.html",
+            controller: 'ChatCtrl',
+            authorize: true
         })
         .state("login.formLogin", {
             templateUrl : "../paginas/index/login.html",
