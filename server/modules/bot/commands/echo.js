@@ -17,10 +17,10 @@ const thisFunction = ( bot, io ) => ( msg, match ) => {
   if ( msg.from.id == `77586615` ) {
     sendMessageFrom( bot, `${BOT_URL}/${msg.chat.id}` )( msg )
 
-    socket.on('message', ( message ) => { 
-      console.log('on message echo: ', message)
-      sendMessageFrom( bot, message )( msg )
-    })
+    // socket.on('message', ( message ) => { 
+    //   console.log('on message echo: ', message)
+    //   sendMessageFrom( bot, message )( msg )
+    // })
 
     // MOSTRa todas as perguntas
 

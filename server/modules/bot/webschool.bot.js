@@ -11,6 +11,7 @@ module.exports = ( io ) => {
 
   const testFor = {
     echo: require( `./commands/echo` )( bot, io ),
+    // start: require( `./commands/start` )( bot, io ),
     // id: require( `./commands/id` )( bot ),
     aula: require( `./commands/aula` )( bot ),
     ask: require( `./commands/ask` )( bot ),
@@ -45,35 +46,65 @@ module.exports = ( io ) => {
     bot.on( `message`, sendMessageFrom( bot, reply ) )
 
   start = () => {
-    addDefaultReplyTo( bot, defaultReplyMessage )
+    // addDefaultReplyTo( bot, defaultReplyMessage )
     addRegexTo( bot, testFor )
   }
 
   start()
 
 
+  bot.onText( /\/start (.+)/, ( msg, match ) => {
+
+    console.log('msg start', msg)
+    // if ( msg.from.id == `77586615` ) {
+    //   sendMessageFrom( bot, `${BOT_URL}/${msg.chat.id}` )( msg )
+
+    // }
+  } )
+
   io.on('connection', (socket) => {
     console.log('connected');
-
 
     // console.log(' Client connected from Server HTTP')
     // clientSockets.push(socket)
     // if (++id > 1) socket.name = socketType
     // console.log(' Count clients connected = ' + id)
 
+    bot.on('message', (msg) => {
+      console.log('bot on msg: ', msg)
+
+      if ( msg.text === `/start` ) {
+        console.log(`/start memooo`)
+
+        // pegar as infos do chat e salva
+        // emite um evento para o front com o
+        // nome do user p/ o front mostrar
+        // no chat list
+
+        const chat = msg.chat
+        socket.emit('chat:new:from:telegram', msg.chat)
+
+      } else {
+        socket.emit('message:from:chat:telegram', msg.text)
+      }
+    });
+
     socket.on('message', ( msg ) => { 
       console.log('on message: ', msg)
-  // ( msg ) => { 
-  //       console.log('emit message from back: ', msg)
-  //     }
-      socket.emit('message', 'emit message from back: ' + msg)
 
-      bot.sendMessage( ID, msg, { 
-        remove_keyboard: true,
-        reply_markup: JSON.stringify({
-            one_time_keyboard: true
-        })
-      })
+      socket.emit('message', msg)
+
+      // sendMessageFrom( bot, msg )
+
+      sendMessageUsing( bot )( ID )( msg )
+
+
+      // bot.sendMessage( ID, msg, { 
+      //   remove_keyboard: true,
+      //   reply_markup: JSON.stringify({
+      //       one_time_keyboard: true
+      //   })
+      // })
     })
 
     socket.on('disconnect', () => { 
