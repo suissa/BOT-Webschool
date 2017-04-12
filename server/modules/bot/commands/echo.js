@@ -11,25 +11,36 @@ const log = (s) => console.log('log: ', s)
 const getQuestions = ( list ) => 
   list.map( obj => [ obj.question, obj.response ] ).join(`\n`)
 
-const thisFunction = ( bot ) => ( msg, match ) => {
+const thisFunction = ( bot, io ) => ( msg, match ) => {
 
   console.log('msg', msg)
   if ( msg.from.id == `77586615` ) {
     sendMessageFrom( bot, `${BOT_URL}/${msg.chat.id}` )( msg )
 
-    find( {}, msg ).then( ( list ) => {
-      console.log('list', list)
-      sendMessageFrom( bot, getQuestions( list ) )( msg )
-    }).catch( log )
+    socket.on('message', ( message ) => { 
+      console.log('on message echo: ', message)
+      sendMessageFrom( bot, message )( msg )
+    })
+
+    // MOSTRa todas as perguntas
+
+    // find( {}, msg ).then( ( list ) => {
+    //   console.log('list', list)
+    //   sendMessageFrom( bot, getQuestions( list ) )( msg )
+    // }).catch( log )
   }
 }
 
-module.exports = ( bot ) => ({
-  regex: /\/echo (.+)/,
-  andExecute: thisFunction( bot ), 
-  isSlashCommad: true, 
-  helpText: 'Repete a mensagem enviada (suporta Markdown)'
-})
+module.exports = ( bot, io ) => {
+
+
+  return {
+    regex: /\/echo (.+)/,
+    andExecute: thisFunction( bot, io ), 
+    isSlashCommad: true, 
+    helpText: 'Repete a mensagem enviada (suporta Markdown)'
+  }
+}
 // { _id: 58e924dd1979166977958f52,
 //   question: 'opdopskop??',
 //   __v: 0,
