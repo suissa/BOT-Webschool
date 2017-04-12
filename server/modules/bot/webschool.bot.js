@@ -3,9 +3,16 @@ const TOKEN = process.env.TOKEN
 const TEXT_POSITION = 1
 const TelegramBot = require( `node-telegram-bot-api` )
 const bot = new TelegramBot( TOKEN, { polling: true } )
-const ID = `77586615`
+let ID = `77586615`
+
+const User = require( `./../../_molecules/user-model` )
+const Chat = require( `./../../_molecules/chat-model` )
+const Message = require( `./../../_molecules/message-model` )
 
 const defaultReplyMessage = `Received your message`
+
+const logError = ( err ) => console.log( `Error: `, err )
+const logSuccess = ( data ) => console.log( `Success: `, data )
 
 module.exports = ( io ) => {
 
@@ -65,13 +72,24 @@ module.exports = ( io ) => {
   io.on('connection', (socket) => {
     console.log('connected');
 
-    // console.log(' Client connected from Server HTTP')
-    // clientSockets.push(socket)
-    // if (++id > 1) socket.name = socketType
-    // console.log(' Count clients connected = ' + id)
-
     bot.on('message', (msg) => {
       console.log('bot on msg: ', msg)
+
+      const message = {
+        message_id: msg.message_id,
+        from: msg.from.id,
+        chat: msg.chat.id,
+        text: msg.text,
+      }
+      Message.create( message )
+            .then( logSuccess )
+            .catch( logError )
+
+      User.update( { id: msg.from.id }, msg.from, { upsert: true } )
+          .then( logSuccess )
+          .catch( logError )
+
+
 
       if ( msg.text === `/start` ) {
         console.log(`/start memooo`)
@@ -80,6 +98,9 @@ module.exports = ( io ) => {
         // emite um evento para o front com o
         // nome do user p/ o front mostrar
         // no chat list
+        Chat.update( { id: msg.chat.id }, msg.chat, { upsert: true } )
+            .then( logSuccess )
+            .catch( logError )
 
         const chat = msg.chat
         socket.emit('chat:new:from:telegram', msg.chat)
@@ -89,7 +110,13 @@ module.exports = ( io ) => {
       }
     });
 
-    socket.on('message', ( msg ) => { 
+    socket.on(  `change:chat:to`, ( id ) => {
+      console.log(`ID antes: `, ID)
+      ID = id
+      console.log(`ID depois: `, ID)
+    })
+
+    socket.on( 'message', ( msg ) => { 
       console.log('on message: ', msg)
 
       socket.emit('message', msg)

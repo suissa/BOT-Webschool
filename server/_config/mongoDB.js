@@ -1,7 +1,7 @@
 const mongoose = require('mongoose')
 
 const online = false;
-const url =  online ? '' : 'mongodb://localhost/seed-atomic';
+const url =  online ? '' : 'mongodb://localhost/bot-admin-test';
 
 const options = { 
 	db: { native_parser: true },
