@@ -18,6 +18,7 @@ const thisFunction = ( bot ) => ( msg, match ) => {
     sendMessageFrom( bot, `${BOT_URL}/${msg.chat.id}` )( msg )
 
     find( {}, msg ).then( ( list ) => {
+      console.log('list', list)
       sendMessageFrom( bot, getQuestions( list ) )( msg )
     }).catch( log )
   }

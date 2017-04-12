@@ -48,8 +48,45 @@ start = () => {
 
 start()
 
-module.exports = {
-  bot,
-  start,
-  sendMessage: sendMessageUsing( bot )
+
+
+
+module.exports = ( io ) => {
+
+
+  io.on('connection', (socket) => {
+    console.log('connected');
+
+
+    // console.log(' Client connected from Server HTTP')
+    // clientSockets.push(socket)
+    // if (++id > 1) socket.name = socketType
+    // console.log(' Count clients connected = ' + id)
+
+    socket.on('message', ( msg ) => { 
+      console.log('on message: ', msg)
+  // ( msg ) => { 
+  //       console.log('emit message from back: ', msg)
+  //     }
+      socket.emit('message', 'emit message from back: ' + msg)
+    })
+
+    socket.on('disconnect', () => { 
+      console.log(' Client disconnect from Server HTTP')
+    })
+
+    socket.on('error', (err) => console.log(' Server HTTP Error: ' + err.message))
+
+    socket.on('disconnect', () => {
+        console.log('disconnected');
+    });
+  });
+
+
+
+  return {
+    bot,
+    start,
+    sendMessage: sendMessageUsing( bot )
+  }
 }
