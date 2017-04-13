@@ -18,8 +18,8 @@ const logSuccess = ( data ) => console.log( `Success: `, data )
 const log = (s) => console.log('log: ', s)
 
 const getQuestions = ( list ) => 
-  list.map( obj => [ obj.question, obj.response ] ).join(`\n`)
-  
+  list.map( obj => [ obj.question, obj.response ] )
+
 module.exports = ( io ) => {
 
   const testFor = {
@@ -102,12 +102,23 @@ module.exports = ( io ) => {
 
           break
         case `/ask_list`:
-          console.log(`/ask_list`, msg)
+          console.log(`/ask_list`, msg) 
 
+          const toSingleQuestion = ( arr, question ) => {
+                      socket.emit('message:from:bot:telegram', question[0].replace(/,/g, ``))
+                    }
           Question.find({})
                   .then( ( list ) => {
                     console.log('list', list)
-                    sendMessageFrom( bot, getQuestions( list ) )( msg )
+                    const questions = getQuestions( list )
+                    const questionsToTelegram = questions
+                                                  .join(`\n\n`)
+                                                  .replace(/,/g, ``)
+
+                    sendMessageFrom( bot, questionsToTelegram )( msg )
+
+                    questions.reduce( toSingleQuestion, [] )
+                    
                   })
                   .catch( log )
 
