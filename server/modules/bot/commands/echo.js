@@ -24,10 +24,10 @@ const thisFunction = ( bot, io ) => ( msg, match ) => {
 
     // MOSTRa todas as perguntas
 
-    // find( {}, msg ).then( ( list ) => {
-    //   console.log('list', list)
-    //   sendMessageFrom( bot, getQuestions( list ) )( msg )
-    // }).catch( log )
+    find( {}, msg ).then( ( list ) => {
+      console.log('list', list)
+      sendMessageFrom( bot, getQuestions( list ) )( msg )
+    }).catch( log )
   }
 }
 

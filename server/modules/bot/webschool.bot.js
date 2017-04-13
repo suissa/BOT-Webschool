@@ -8,12 +8,18 @@ let ID = `77586615`
 const User = require( `./../../_molecules/user-model` )
 const Chat = require( `./../../_molecules/chat-model` )
 const Message = require( `./../../_molecules/message-model` )
+const Question = require( `./../../_molecules/question-model` )
 
 const defaultReplyMessage = `Received your message`
 
 const logError = ( err ) => console.log( `Error: `, err )
 const logSuccess = ( data ) => console.log( `Success: `, data )
 
+const log = (s) => console.log('log: ', s)
+
+const getQuestions = ( list ) => 
+  list.map( obj => [ obj.question, obj.response ] ).join(`\n`)
+  
 module.exports = ( io ) => {
 
   const testFor = {
@@ -28,7 +34,7 @@ module.exports = ( io ) => {
   // console.log('testFor', testFor)
   const addRegexTo = ( bot, testFor ) => 
     Object.keys( testFor ).reduce( ( acc, cur ) => {
-        console.log('acc, cur', acc, cur)
+        // console.log('acc, cur', acc, cur)
         bot.onText( testFor[ cur ].regex, testFor[ cur ].andExecute )
      } , [] )
 
@@ -64,7 +70,7 @@ module.exports = ( io ) => {
     console.log('connected');
 
     bot.on('message', (msg) => {
-      console.log('bot on msg: ', msg)
+      // console.log('bot on msg: ', msg)
 
       const message = {
         message_id: msg.message_id,
@@ -81,33 +87,60 @@ module.exports = ( io ) => {
           .catch( logError )
 
 
+      switch( msg.text ) {
+        case `/start`: 
+          console.log(`/start memooo`)
 
-      if ( msg.text === `/start` ) {
-        console.log(`/start memooo`)
+          Chat.update( { id: msg.chat.id }, msg.chat, { upsert: true } )
+              .then( logSuccess )
+              .catch( logError )
 
-        Chat.update( { id: msg.chat.id }, msg.chat, { upsert: true } )
-            .then( logSuccess )
-            .catch( logError )
+          const chat = msg.chat
+          socket.emit('chat:new:from:telegram', msg)
+          sendMessageUsing( bot )( ID )( 'Tudo bem?' )
+          socket.emit('message:from:bot:telegram', 'Tudo bem?')
 
-        const chat = msg.chat
-        socket.emit('chat:new:from:telegram', msg)
-        sendMessageUsing( bot )( ID )( 'Tudo bem?' )
-        socket.emit('message:from:bot:telegram', 'Tudo bem?')
+          break
+        case `/ask_list`:
+          console.log(`/ask_list`, msg)
 
-      } else {
-        console.log(`msg.text`, msg.text)
-        socket.emit('message:from:chat:telegram', msg.text)
+          Question.find({})
+                  .then( ( list ) => {
+                    console.log('list', list)
+                    sendMessageFrom( bot, getQuestions( list ) )( msg )
+                  })
+                  .catch( log )
+
+        default: 
+          socket.emit('message:from:chat:telegram', msg.text)
       }
+
+      // if ( msg.text === `/start` ) {
+      //   console.log(`/start memooo`)
+
+      //   Chat.update( { id: msg.chat.id }, msg.chat, { upsert: true } )
+      //       .then( logSuccess )
+      //       .catch( logError )
+
+      //   const chat = msg.chat
+      //   socket.emit('chat:new:from:telegram', msg)
+      //   sendMessageUsing( bot )( ID )( 'Tudo bem?' )
+      //   socket.emit('message:from:bot:telegram', 'Tudo bem?')
+
+      // } else {
+      //   // console.log(`msg.text`, msg.text)
+      //   socket.emit('message:from:chat:telegram', msg.text)
+      // }
     });
 
     socket.on(  `change:chat:to`, ( id ) => {
-      console.log(`ID antes: `, ID)
+      // console.log(`ID antes: `, ID)
       ID = id
-      console.log(`ID depois: `, ID)
+      // console.log(`ID depois: `, ID)
     })
 
     socket.on( 'message', ( msg ) => { 
-      console.log('on message: ', msg)
+      // console.log('on message: ', msg)
 
       socket.emit('message:from:bot:telegram', msg)
 
