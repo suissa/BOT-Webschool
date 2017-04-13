@@ -90,11 +90,12 @@ module.exports = ( io ) => {
             .catch( logError )
 
         const chat = msg.chat
-        socket.emit('chat:new:from:telegram', msg.chat)
+        socket.emit('chat:new:from:telegram', msg)
         sendMessageUsing( bot )( ID )( 'Tudo bem?' )
         socket.emit('message:from:bot:telegram', 'Tudo bem?')
 
       } else {
+        console.log(`msg.text`, msg.text)
         socket.emit('message:from:chat:telegram', msg.text)
       }
     });
@@ -108,7 +109,7 @@ module.exports = ( io ) => {
     socket.on( 'message', ( msg ) => { 
       console.log('on message: ', msg)
 
-      socket.emit('message', msg)
+      socket.emit('message:from:bot:telegram', msg)
 
       // sendMessageFrom( bot, msg )
 
