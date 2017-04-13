@@ -12,7 +12,7 @@ const Question = require( `./../../_molecules/question-model` )
 
 const defaultReplyMessage = `Received your message`
 
-const logError = ( err ) => console.log( `Error: `, err )
+const logError = ( err ) => console.log( `Error: `) //console.log( `Error: `, err )
 const logSuccess = ( data ) => console.log( `Success: `, data )
 
 const log = (s) => console.log('log: ', s)
@@ -79,11 +79,11 @@ module.exports = ( io ) => {
         text: msg.text,
       }
       Message.create( message )
-            .then( logSuccess )
+            .then( logSuccess('Message') )
             .catch( logError )
 
       User.update( { id: msg.from.id }, msg.from, { upsert: true } )
-          .then( logSuccess )
+          .then( logSuccess('User') )
           .catch( logError )
 
 
@@ -92,13 +92,15 @@ module.exports = ( io ) => {
           console.log(`/start memooo`)
 
           Chat.update( { id: msg.chat.id }, msg.chat, { upsert: true } )
-              .then( logSuccess )
+              .then( logSuccess('Chat') )
               .catch( logError )
 
           const chat = msg.chat
           socket.emit('chat:new:from:telegram', msg)
           sendMessageUsing( bot )( ID )( 'Tudo bem?' )
+          console.log('mandei Tudo bem? pelo BOT no Telegram')
           socket.emit('message:from:bot:telegram', 'Tudo bem?')
+          console.log('mandei Tudo bem? pelo BOT no Dash')
 
           break
         case `/ask_list`:
