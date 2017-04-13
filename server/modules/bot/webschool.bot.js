@@ -60,15 +60,6 @@ module.exports = ( io ) => {
   start()
 
 
-  bot.onText( /\/start (.+)/, ( msg, match ) => {
-
-    console.log('msg start', msg)
-    // if ( msg.from.id == `77586615` ) {
-    //   sendMessageFrom( bot, `${BOT_URL}/${msg.chat.id}` )( msg )
-
-    // }
-  } )
-
   io.on('connection', (socket) => {
     console.log('connected');
 
@@ -94,16 +85,14 @@ module.exports = ( io ) => {
       if ( msg.text === `/start` ) {
         console.log(`/start memooo`)
 
-        // pegar as infos do chat e salva
-        // emite um evento para o front com o
-        // nome do user p/ o front mostrar
-        // no chat list
         Chat.update( { id: msg.chat.id }, msg.chat, { upsert: true } )
             .then( logSuccess )
             .catch( logError )
 
         const chat = msg.chat
         socket.emit('chat:new:from:telegram', msg.chat)
+        sendMessageUsing( bot )( ID )( 'Tudo bem?' )
+        socket.emit('message:from:bot:telegram', 'Tudo bem?')
 
       } else {
         socket.emit('message:from:chat:telegram', msg.text)
